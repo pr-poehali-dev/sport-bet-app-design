@@ -43,6 +43,78 @@ const Index = () => {
     { id: 3, text: 'Коэффициент изменился на матч Ливерпуль - Челси', time: '1 час назад', type: 'alert' },
   ];
 
+  const deepSeekAnalysis = [
+    {
+      id: 1,
+      match: 'Барселона - Реал Мадрид',
+      sport: 'Футбол',
+      time: 'Сегодня 21:00',
+      recommendation: 'Ставка на П1 (Барселона)',
+      confidence: 92,
+      odds: 2.15,
+      expectedProfit: '+23%',
+      analysis: {
+        form: { home: 85, away: 72 },
+        h2h: 'Барселона выиграла 7 из 10 последних матчей',
+        injuries: 'Реал без ключевого защитника',
+        weather: 'Идеальные условия',
+        motivation: 'Высокая - борьба за 1 место'
+      },
+      keyFactors: [
+        { icon: 'TrendingUp', text: 'Барселона: 8 побед подряд дома', positive: true },
+        { icon: 'Users', text: 'Реал: 3 ключевых игрока травмированы', positive: true },
+        { icon: 'Target', text: 'Статистика встреч: 70% побед Барселоны', positive: true },
+        { icon: 'Zap', text: 'Атака Барсы забивает в среднем 2.8 гола', positive: true }
+      ]
+    },
+    {
+      id: 2,
+      match: 'Лейкерс - Воины',
+      sport: 'Баскетбол',
+      time: 'Сегодня 04:30',
+      recommendation: 'Тотал больше 225.5',
+      confidence: 88,
+      odds: 1.95,
+      expectedProfit: '+18%',
+      analysis: {
+        form: { home: 78, away: 82 },
+        h2h: 'Последние 5 матчей - всегда ТБ 220',
+        injuries: 'Все звезды в составе',
+        weather: 'Закрытая арена',
+        motivation: 'Средняя - середина сезона'
+      },
+      keyFactors: [
+        { icon: 'TrendingUp', text: 'Средний тотал последних встреч: 238', positive: true },
+        { icon: 'Flame', text: 'Обе команды в топ-5 по темпу игры', positive: true },
+        { icon: 'Shield', text: 'Слабая защита у обеих команд', positive: true },
+        { icon: 'Star', text: 'Все звезды здоровы и мотивированы', positive: true }
+      ]
+    },
+    {
+      id: 3,
+      match: 'Ливерпуль - Челси',
+      sport: 'Футбол',
+      time: 'Завтра 19:00',
+      recommendation: 'Обе команды забьют',
+      confidence: 81,
+      odds: 1.75,
+      expectedProfit: '+12%',
+      analysis: {
+        form: { home: 80, away: 76 },
+        h2h: 'В 8 из 10 матчей обе забивали',
+        injuries: 'Нападающие в строю',
+        weather: 'Сухая погода',
+        motivation: 'Высокая - битва за топ-4'
+      },
+      keyFactors: [
+        { icon: 'Target', text: 'Ливерпуль забил во всех 12 домашних матчах', positive: true },
+        { icon: 'Swords', text: 'Челси забивает в 85% выездных игр', positive: true },
+        { icon: 'Shield', text: 'Обе команды пропускают в среднем 1+ гол', positive: true },
+        { icon: 'Timer', text: 'История встреч: много голов с обеих сторон', positive: true }
+      ]
+    }
+  ];
+
   const renderHome = () => (
     <div className="space-y-6 pb-20">
       <div className="gradient-sport p-6 rounded-2xl text-white">
@@ -303,12 +375,111 @@ const Index = () => {
     </div>
   );
 
+  const renderDeepSeek = () => (
+    <div className="space-y-6 pb-20">
+      <div className="gradient-sport p-6 rounded-2xl text-white">
+        <div className="flex items-center gap-2 mb-2">
+          <Icon name="Sparkles" size={28} />
+          <h1 className="text-2xl font-bold">Дип Сик AI</h1>
+        </div>
+        <p className="text-sm opacity-90">Глубокий анализ и готовые решения</p>
+      </div>
+
+      <div className="space-y-4">
+        {deepSeekAnalysis.map((analysis) => (
+          <Card key={analysis.id} className="p-5 bg-card border-2 border-primary/20 hover:border-primary/40 transition-all">
+            <div className="space-y-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="secondary" className="text-xs">{analysis.sport}</Badge>
+                    <Badge variant="outline" className="text-xs">{analysis.time}</Badge>
+                  </div>
+                  <h3 className="font-bold text-lg">{analysis.match}</h3>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-primary">{analysis.odds}</div>
+                  <div className="text-xs text-muted-foreground">Коэффициент</div>
+                </div>
+              </div>
+
+              <div className="gradient-sport p-4 rounded-xl">
+                <div className="flex items-center justify-between text-white mb-2">
+                  <div className="flex items-center gap-2">
+                    <Icon name="Lightbulb" size={20} />
+                    <span className="font-semibold">Рекомендация:</span>
+                  </div>
+                  <Badge className="bg-white text-primary font-bold">
+                    {analysis.confidence}% уверенность
+                  </Badge>
+                </div>
+                <p className="text-white font-bold text-lg">{analysis.recommendation}</p>
+                <p className="text-sm text-white/80 mt-1">Ожидаемая прибыль: {analysis.expectedProfit}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-muted/50 p-3 rounded-lg">
+                  <div className="text-xs text-muted-foreground mb-1">Форма дома</div>
+                  <div className="flex items-center gap-2">
+                    <Progress value={analysis.analysis.form.home} className="flex-1" />
+                    <span className="text-sm font-bold">{analysis.analysis.form.home}%</span>
+                  </div>
+                </div>
+                <div className="bg-muted/50 p-3 rounded-lg">
+                  <div className="text-xs text-muted-foreground mb-1">Форма гостей</div>
+                  <div className="flex items-center gap-2">
+                    <Progress value={analysis.analysis.form.away} className="flex-1" />
+                    <span className="text-sm font-bold">{analysis.analysis.form.away}%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="font-semibold text-sm text-muted-foreground">Ключевые факторы:</h4>
+                {analysis.keyFactors.map((factor, idx) => (
+                  <div key={idx} className="flex items-start gap-2 text-sm">
+                    <Icon name={factor.icon} size={16} className="text-green-400 mt-0.5" />
+                    <span>{factor.text}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-muted/30 p-3 rounded-lg space-y-1 text-sm">
+                <div className="flex items-center gap-2">
+                  <Icon name="History" size={14} className="text-muted-foreground" />
+                  <span className="text-muted-foreground">H2H:</span>
+                  <span className="font-medium">{analysis.analysis.h2h}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Icon name="Activity" size={14} className="text-muted-foreground" />
+                  <span className="text-muted-foreground">Травмы:</span>
+                  <span className="font-medium">{analysis.analysis.injuries}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Icon name="Zap" size={14} className="text-muted-foreground" />
+                  <span className="text-muted-foreground">Мотивация:</span>
+                  <span className="font-medium">{analysis.analysis.motivation}</span>
+                </div>
+              </div>
+
+              <Button className="w-full gradient-sport text-white font-bold py-6 text-base">
+                <Icon name="Sparkles" size={18} className="mr-2" />
+                Использовать прогноз
+              </Button>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-md mx-auto px-4 py-6">
         {activeTab === 'home' && renderHome()}
         {activeTab === 'bets' && renderBets()}
         {activeTab === 'analytics' && renderAnalytics()}
+        {activeTab === 'deepseek' && renderDeepSeek()}
         {activeTab === 'notifications' && renderNotifications()}
       </div>
 
@@ -321,7 +492,7 @@ const Index = () => {
                 activeTab === 'home' ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <Icon name="Home" size={24} />
+              <Icon name="Home" size={22} />
               <span className="text-xs font-medium">Главная</span>
             </button>
             <button
@@ -330,8 +501,18 @@ const Index = () => {
                 activeTab === 'bets' ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <Icon name="Ticket" size={24} />
+              <Icon name="Ticket" size={22} />
               <span className="text-xs font-medium">Ставки</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('deepseek')}
+              className={`flex flex-col items-center gap-1 transition-colors relative ${
+                activeTab === 'deepseek' ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <Icon name="Sparkles" size={22} />
+              <span className="text-xs font-medium">Дип Сик</span>
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-sport rounded-full animate-pulse" />
             </button>
             <button
               onClick={() => setActiveTab('analytics')}
@@ -339,7 +520,7 @@ const Index = () => {
                 activeTab === 'analytics' ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <Icon name="Brain" size={24} />
+              <Icon name="Brain" size={22} />
               <span className="text-xs font-medium">Анализ</span>
             </button>
             <button
@@ -348,8 +529,8 @@ const Index = () => {
                 activeTab === 'notifications' ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <Icon name="Bell" size={24} />
-              <span className="text-xs font-medium">Оповещения</span>
+              <Icon name="Bell" size={22} />
+              <span className="text-xs font-medium">Инфо</span>
               <span className="absolute top-0 right-2 w-2 h-2 bg-accent rounded-full animate-pulse" />
             </button>
           </div>
