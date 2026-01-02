@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,11 +9,42 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('home');
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentDate(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatDate = (date: Date) => {
+    const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+    return date.toLocaleDateString('ru-RU', options);
+  };
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const getTodayDate = () => {
+    return formatDate(currentDate);
+  };
+
+  const getTomorrowDate = () => {
+    const tomorrow = new Date(currentDate);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return formatDate(tomorrow);
+  };
+
+  const getMatchTime = (hoursFromNow: number) => {
+    const matchDate = new Date(currentDate);
+    matchDate.setHours(matchDate.getHours() + hoursFromNow);
+    return matchDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  };
 
   const liveMatches = [
-    { id: 1, team1: 'Барселона', team2: 'Реал Мадрид', score: '2:1', time: '67\'', sport: 'Футбол', k1: 2.1, k2: 3.5, isLive: true },
-    { id: 2, team1: 'Лейкерс', team2: 'Воины', score: '89:92', time: 'Q3 4:32', sport: 'Баскетбол', k1: 1.8, k2: 2.0, isLive: true },
-    { id: 3, team1: 'Ливерпуль', team2: 'Челси', score: '', time: '19:00', sport: 'Футбол', k1: 1.95, k2: 2.2, isLive: false },
+    { id: 1, team1: 'Манчестер Сити', team2: 'Ливерпуль', score: '1:1', time: '73\'', sport: 'Футбол', k1: 2.3, k2: 3.1, isLive: true },
+    { id: 2, team1: 'Бостон Селтикс', team2: 'Лейкерс', score: '95:98', time: 'Q4 6:12', sport: 'Баскетбол', k1: 1.7, k2: 2.1, isLive: true },
+    { id: 3, team1: 'Бавария', team2: 'Боруссия Д', score: '', time: getMatchTime(3), sport: 'Футбол', k1: 1.85, k2: 2.4, isLive: false },
   ];
 
   const myBets = [
@@ -46,72 +77,96 @@ const Index = () => {
   const deepSeekAnalysis = [
     {
       id: 1,
-      match: 'Барселона - Реал Мадрид',
-      sport: 'Футбол',
-      time: 'Сегодня 21:00',
-      recommendation: 'Ставка на П1 (Барселона)',
-      confidence: 92,
-      odds: 2.15,
-      expectedProfit: '+23%',
+      match: 'Манчестер Сити - Арсенал',
+      sport: 'АПЛ',
+      time: `Сегодня ${getMatchTime(5)}`,
+      date: getTodayDate(),
+      recommendation: 'Тотал больше 2.5 голов',
+      confidence: 89,
+      odds: 1.92,
+      expectedProfit: '+19%',
+      reasoning: 'Закономерность: В последних 9 из 10 матчей Сити дома было ТБ 2.5. Арсенал пропустил в 7 из 8 выездных игр.',
       analysis: {
-        form: { home: 85, away: 72 },
-        h2h: 'Барселона выиграла 7 из 10 последних матчей',
-        injuries: 'Реал без ключевого защитника',
-        weather: 'Идеальные условия',
-        motivation: 'Высокая - борьба за 1 место'
+        form: { home: 88, away: 81 },
+        h2h: 'Последние 6 матчей: среднее 3.8 гола за матч',
+        injuries: 'Все атакующие лидеры в строю',
+        weather: 'Ясно, +12°C, идеально для атакующего футбола',
+        motivation: 'Критично высокая - борьба за чемпионство'
       },
       keyFactors: [
-        { icon: 'TrendingUp', text: 'Барселона: 8 побед подряд дома', positive: true },
-        { icon: 'Users', text: 'Реал: 3 ключевых игрока травмированы', positive: true },
-        { icon: 'Target', text: 'Статистика встреч: 70% побед Барселоны', positive: true },
-        { icon: 'Zap', text: 'Атака Барсы забивает в среднем 2.8 гола', positive: true }
-      ]
+        { icon: 'TrendingUp', text: 'Сити: ТБ 2.5 в 90% домашних матчей (9/10)', positive: true },
+        { icon: 'Target', text: 'Средний xG Сити дома: 2.7 за матч', positive: true },
+        { icon: 'Shield', text: 'Арсенал пропустил в 87.5% выездных игр (7/8)', positive: true },
+        { icon: 'Zap', text: 'История противостояний: 83% матчей ТБ 2.5 (5/6)', positive: true }
+      ],
+      statistics: {
+        pattern: 'ТБ 2.5',
+        success_rate: '90%',
+        sample_size: '10 матчей',
+        correlation: 'Высокая'
+      }
     },
     {
       id: 2,
-      match: 'Лейкерс - Воины',
-      sport: 'Баскетбол',
-      time: 'Сегодня 04:30',
-      recommendation: 'Тотал больше 225.5',
-      confidence: 88,
-      odds: 1.95,
-      expectedProfit: '+18%',
+      match: 'Бостон Селтикс - Майами Хит',
+      sport: 'NBA',
+      time: `${getTomorrowDate().split(' ')[0]} января 02:30`,
+      date: getTomorrowDate(),
+      recommendation: 'Победа Бостона с форой -5.5',
+      confidence: 85,
+      odds: 1.88,
+      expectedProfit: '+15%',
+      reasoning: 'Паттерн: Бостон выигрывает дома с разницей 6+ очков в 82% случаев против команд ниже 6 места.',
       analysis: {
-        form: { home: 78, away: 82 },
-        h2h: 'Последние 5 матчей - всегда ТБ 220',
-        injuries: 'Все звезды в составе',
-        weather: 'Закрытая арена',
-        motivation: 'Средняя - середина сезона'
+        form: { home: 91, away: 68 },
+        h2h: 'Бостон выиграл последние 4 домашних встречи со средней разницей +11',
+        injuries: 'У Майами травмированы 2 стартовых защитника',
+        weather: 'Закрытая арена TD Garden',
+        motivation: 'Высокая - защита домашней площадки'
       },
       keyFactors: [
-        { icon: 'TrendingUp', text: 'Средний тотал последних встреч: 238', positive: true },
-        { icon: 'Flame', text: 'Обе команды в топ-5 по темпу игры', positive: true },
-        { icon: 'Shield', text: 'Слабая защита у обеих команд', positive: true },
-        { icon: 'Star', text: 'Все звезды здоровы и мотивированы', positive: true }
-      ]
+        { icon: 'TrendingUp', text: 'Бостон дома: 82% побед с форой -5.5 (14/17)', positive: true },
+        { icon: 'Users', text: 'Майами без двух защитников (27 очков за игру)', positive: true },
+        { icon: 'Flame', text: 'Бостон: лучшая атака лиги дома (119.4 ppg)', positive: true },
+        { icon: 'History', text: 'H2H: последние 4 дома - средняя разница +11', positive: true }
+      ],
+      statistics: {
+        pattern: 'Фора -5.5',
+        success_rate: '82%',
+        sample_size: '17 матчей',
+        correlation: 'Очень высокая'
+      }
     },
     {
       id: 3,
-      match: 'Ливерпуль - Челси',
-      sport: 'Футбол',
-      time: 'Завтра 19:00',
-      recommendation: 'Обе команды забьют',
-      confidence: 81,
-      odds: 1.75,
-      expectedProfit: '+12%',
+      match: 'Бавария - Боруссия Дортмунд',
+      sport: 'Бундеслига',
+      time: `${getTomorrowDate().split(' ')[0]} января 20:30`,
+      date: getTomorrowDate(),
+      recommendation: 'Обе команды забьют + ТБ 2.5',
+      confidence: 87,
+      odds: 2.05,
+      expectedProfit: '+21%',
+      reasoning: 'Статистика: В 94% личных встреч обе забивали. Дортмунд забил во всех 11 выездных матчах сезона.',
       analysis: {
-        form: { home: 80, away: 76 },
-        h2h: 'В 8 из 10 матчей обе забивали',
-        injuries: 'Нападающие в строю',
-        weather: 'Сухая погода',
-        motivation: 'Высокая - битва за топ-4'
+        form: { home: 89, away: 84 },
+        h2h: 'В 15 из 16 последних встреч обе забивали',
+        injuries: 'Все нападающие доступны обеим командам',
+        weather: 'Крытая арена Альянц',
+        motivation: 'Максимальная - Der Klassiker, принципиальное дерби'
       },
       keyFactors: [
-        { icon: 'Target', text: 'Ливерпуль забил во всех 12 домашних матчах', positive: true },
-        { icon: 'Swords', text: 'Челси забивает в 85% выездных игр', positive: true },
-        { icon: 'Shield', text: 'Обе команды пропускают в среднем 1+ гол', positive: true },
-        { icon: 'Timer', text: 'История встреч: много голов с обеих сторон', positive: true }
-      ]
+        { icon: 'Swords', text: 'H2H: обе забивают в 94% встреч (15/16)', positive: true },
+        { icon: 'Target', text: 'Дортмунд: забил во всех 11 выездных матчах (100%)', positive: true },
+        { icon: 'TrendingUp', text: 'Бавария дома: в среднем 3.1 гола за матч', positive: true },
+        { icon: 'Zap', text: 'Атаки обеих команд в топ-3 лиги по xG', positive: true }
+      ],
+      statistics: {
+        pattern: 'Обе забьют + ТБ 2.5',
+        success_rate: '94%',
+        sample_size: '16 матчей H2H',
+        correlation: 'Критически высокая'
+      }
     }
   ];
 
@@ -442,6 +497,32 @@ const Index = () => {
                     <span>{factor.text}</span>
                   </div>
                 ))}
+              </div>
+
+              <div className="bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 p-4 rounded-xl">
+                <div className="flex items-center gap-2 mb-2">
+                  <Icon name="BookOpen" size={16} className="text-primary" />
+                  <h4 className="font-semibold text-sm">Закономерность:</h4>
+                </div>
+                <p className="text-sm leading-relaxed mb-3">{analysis.reasoning}</p>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="bg-background/50 p-2 rounded">
+                    <div className="text-muted-foreground">Паттерн</div>
+                    <div className="font-bold text-primary">{analysis.statistics.pattern}</div>
+                  </div>
+                  <div className="bg-background/50 p-2 rounded">
+                    <div className="text-muted-foreground">Успешность</div>
+                    <div className="font-bold text-green-400">{analysis.statistics.success_rate}</div>
+                  </div>
+                  <div className="bg-background/50 p-2 rounded">
+                    <div className="text-muted-foreground">Выборка</div>
+                    <div className="font-bold">{analysis.statistics.sample_size}</div>
+                  </div>
+                  <div className="bg-background/50 p-2 rounded">
+                    <div className="text-muted-foreground">Корреляция</div>
+                    <div className="font-bold">{analysis.statistics.correlation}</div>
+                  </div>
+                </div>
               </div>
 
               <div className="bg-muted/30 p-3 rounded-lg space-y-1 text-sm">
